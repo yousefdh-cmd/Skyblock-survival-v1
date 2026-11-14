@@ -6,6 +6,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: unzip -o skyblock-survival-mod.zip -d proj
+      - name: Unzip extras
+        run: if [ -f skyblock-extras.zip ]; then unzip -o skyblock-extras.zip -d proj; fi
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: 21 }
       - uses: gradle/actions/setup-gradle@v4
@@ -13,12 +15,16 @@ jobs:
       - name: Build core
         run: gradle build --no-daemon
         working-directory: proj
-      - name: Build add-on
+      - name: Build enchantments
         run: gradle build --no-daemon
         working-directory: proj/addon
+      - name: Build coins
+        run: if [ -d coins ]; then cd coins && gradle build --no-daemon; fi
+        working-directory: proj
       - uses: actions/upload-artifact@v4
         with:
           name: mod-jars
           path: |
             proj/build/libs/*.jar
             proj/addon/build/libs/*.jar
+            proj/coins/build/libs/*.jar
