@@ -10,7 +10,15 @@ jobs:
         with: { distribution: temurin, java-version: 21 }
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: 8.14.3 }
-      - run: gradle build --no-daemon
+      - name: Build core
+        run: gradle build --no-daemon
         working-directory: proj
+      - name: Build add-on
+        run: gradle build --no-daemon
+        working-directory: proj/addon
       - uses: actions/upload-artifact@v4
-        with: { name: mod-jar, path: "proj/build/libs/*.jar" }
+        with:
+          name: mod-jars
+          path: |
+            proj/build/libs/*.jar
+            proj/addon/build/libs/*.jar
